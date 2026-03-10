@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Music Generator</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<h1>AI Music Generator</h1>
+
+<form action="/generate" method="POST">
+
+<label>Mood</label>
+<select name="mood">
+<option value="happy">Happy</option>
+<option value="sad">Sad</option>
+<option value="energetic">Energetic</option>
+</select>
+
+<br><br>
+
+<label>Genre</label>
+<select name="genre">
+<option value="lofi">Lofi</option>
+<option value="edm">EDM</option>
+<option value="ambient">Ambient</option>
+</select>
+
+<br><br>
+
+<button type="submit">Generate Music</button>
+
+</form>
+
+</body>
+</html>
