@@ -1,45 +1,38 @@
 import streamlit as st
-import numpy as np
-from scipy.io.wavfile import write
-import uuid
+import torch
+from transformers import MusicgenForConditionalGeneration, AutoProcessor
+import scipy.io.wavfile as wav
+import tempfile
 
-st.title("🎵 AI Music Generator")
+st.title("🎵 AI Prompt to Music Generator")
 
-mood = st.selectbox(
-"Select Mood",
-["happy","sad","energetic"]
-)
-
-genre = st.selectbox(
-"Select Genre",
-["lofi","edm","ambient"]
-)
+prompt = st.text_input("Enter music prompt")
 
 if st.button("Generate Music"):
 
-    rate = 44100
-    duration = 5
+    st.write("Generating music... please wait")
 
-    if mood == "happy":
-        freq = 600
-    elif mood == "sad":
-        freq = 300
-    else:
-        freq = 900
+    processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+    model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
 
-    if genre == "lofi":
-        freq -= 100
-    elif genre == "edm":
-        freq += 200
+    inputs = processor(
+        text=[prompt],
+        padding=True,
+        return_tensors="pt",
+    )
 
-    t = np.linspace(0,duration,int(rate*duration),False)
+    audio_values = model.generate(**inputs, max_new_tokens=256)
 
-    audio = np.sin(2*np.pi*freq*t)
+    sampling_rate = model.config.audio_encoder.sampling_rate
 
-    filename = f"music_{uuid.uuid4().hex}.wav"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
 
-    write(filename,rate,audio.astype(np.float32))
+        wav.write(
+            f.name,
+            rate=sampling_rate,
+            data=audio_values[0,0].cpu().numpy()
+        )
 
-    st.success("Music Generated!")
+        st.audio(f.name)
 
-    st.audio(filename)
+        st.success("Music Generated!")
