@@ -1,6 +1,7 @@
-streamlit
-torch
-torchaudio
-transformers
+streamlit==1.33.0
+torch==2.2.2
+torchaudio==2.2.2
+transformers==4.38.2
 scipy
 numpy
+sentencepiece
